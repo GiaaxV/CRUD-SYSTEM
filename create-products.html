@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Product - Product Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Product Management System</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Products</a></li>
+                <li><a href="create-products.html" class="active">Add Product</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Add New Product</h2>
+        <form id="productForm" class="product-form">
+            <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" name="productName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="regularPrice">Regular Price</label>
+                <input type="number" id="regularPrice" name="regularPrice" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="salePrice">Sale Price</label>
+                <input type="number" id="salePrice" name="salePrice" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea id="description" name="description" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="availability">Availability Status</label>
+                <select id="availability" name="availability" required>
+                    <option value="available">Available</option>
+                    <option value="out_of_stock">Out of Stock</option>
+                    <option value="coming_soon">Coming Soon</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="productImage">Product Image</label>
+                <input type="file" id="productImage" name="productImage" accept="image/*">
+            </div>
+
+            <button type="submit" class="submit-button">Add Product</button>
+        </form>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Product Management System. All rights reserved.</p>
+    </footer>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
