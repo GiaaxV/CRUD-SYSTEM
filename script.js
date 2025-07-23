@@ -1,18 +1,53 @@
 import { db } from './firebase-config.js';
 import { collection, addDoc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
 
+// Function to upload image to ImgBB
+async function uploadImageToImgBB(imageFile) {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    
+    try {
+        const response = await fetch('https://api.imgbb.com/1/upload?key=797485aa90fc3b1116f9ce93e76ca93d', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            return data.data.url; // Returns the direct image URL
+        } else {
+            throw new Error('Failed to upload image to ImgBB');
+        }
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+    }
+}
+
 // Create Product - create-products.html
 document.getElementById('productForm')?.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const productName = document.getElementById('productName').value;
-    const regularPrice = parseFloat(document.getElementById('regularPrice').value);
-    const salePrice = parseFloat(document.getElementById('salePrice').value);
-    const description = document.getElementById('description').value;
-    const productImage = document.getElementById('productImage').files[0];
+    const submitButton = document.querySelector('#productForm button[type="submit"]');
+    const originalButtonText = submitButton.textContent;
     
     try {
-        // Crear el producto primero
+        submitButton.disabled = true;
+        submitButton.textContent = 'Uploading...';
+        
+        const productName = document.getElementById('productName').value;
+        const regularPrice = parseFloat(document.getElementById('regularPrice').value);
+        const salePrice = parseFloat(document.getElementById('salePrice').value);
+        const description = document.getElementById('description').value;
+        const productImage = document.getElementById('productImage').files[0];
+        let imageUrl = null;
+        
+        // Upload image to ImgBB if one was selected
+        if (productImage) {
+            imageUrl = await uploadImageToImgBB(productImage);
+        }
+        
+        // Create the product in Firestore
         const docRef = await addDoc(collection(db, "products"), {
             name: productName,
             regularPrice: regularPrice,
@@ -20,14 +55,17 @@ document.getElementById('productForm')?.addEventListener('submit', async (e) => 
             description: description,
             availability: document.getElementById('availability').value,
             timestamp: new Date(),
-            imageUrl: productImage ? URL.createObjectURL(productImage) : null
+            imageUrl: imageUrl
         });
         
         alert('Product added successfully!');
         document.getElementById('productForm').reset();
     } catch (error) {
         console.error("Error adding product:", error);
-        alert('Error adding product. Please try again.');
+        alert('Error adding product. ' + (error.message || 'Please try again.'));
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = originalButtonText;
     }
 });
 
